@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE_SERVER = 'My-SonarQube'
-        DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
+SONARQUBE_TOKEN = credentials('sonar-token')
+DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
         DOCKER_IMAGE = 'emna450/tp-projet-2025'
         KUBECONFIG_CREDENTIALS = 'kubeconfig-credentials'
         K8S_NAMESPACE = 'default'
