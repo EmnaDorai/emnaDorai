@@ -64,8 +64,9 @@ DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
            steps {
         withKubeConfig([credentialsId: 'kubeconfig-credentials']) {
             sh """
-                kubectl --context=jenkins-minikube apply -f k8s/mysql.yaml
-                kubectl --context=jenkins-minikube apply -f k8s/deployment.yaml
+               kubectl get nodes
+               kubectl apply -f k8s/mysql.yaml
+               kubectl apply -f k8s/deployment.yaml
             """
                 }
             }
