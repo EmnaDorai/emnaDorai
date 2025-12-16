@@ -62,7 +62,7 @@ DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
 
         stage('Deploy on Kubernetes') {
             steps {
-                withKubeConfig([credentialsId: KUBECONFIG_CREDENTIALS]) {
+                withKubeConfig([kubeconfig: '/var/lib/jenkins/.kube/config']) {
                     sh """
                         kubectl apply -f k8s/mysql.yaml
                         kubectl apply -f k8s/deployment.yaml
