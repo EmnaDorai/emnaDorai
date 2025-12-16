@@ -2,10 +2,9 @@ pipeline {
     agent any
 
     environment {
-SONARQUBE_TOKEN = credentials('sonar-token')
-DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
+        SONARQUBE_TOKEN = credentials('sonar-token')
+        DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
         DOCKER_IMAGE = 'emna450/tp-projet-2025'
-        KUBECONFIG_CREDENTIALS = 'kubeconfig-credentials'
         K8S_NAMESPACE = 'default'
     }
 
@@ -27,9 +26,9 @@ DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
             }
         }
 
-       stage('Compile Project') {
+        stage('Compile Project') {
             steps {
-                sh "mvn compile"
+                sh 'mvn compile'
             }
         }
 
@@ -41,7 +40,6 @@ DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
             }
         }
 
-
         stage('Build JAR') {
             steps {
                 sh 'mvn package -DskipTests'
@@ -50,25 +48,32 @@ DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
 
         stage('Docker Build & Push') {
             steps {
-                withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIALS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh """
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: DOCKER_HUB_CREDENTIALS,
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+                    sh '''
                         docker login -u $DOCKER_USER -p $DOCKER_PASS
                         docker build -t $DOCKER_IMAGE:latest .
                         docker push $DOCKER_IMAGE:latest
-                    """
+                    '''
                 }
             }
         }
 
         stage('Deploy on Kubernetes') {
-           steps {
-        withKubeConfig([credentialsId: 'kubeconfig-credentials']) {
-            sh """
-               kubectl get nodes
-               kubectl apply -f k8s/mysql.yaml
-               kubectl apply -f k8s/deployment.yaml
-            """
-                }
+            environment {
+                KUBECONFIG = '/var/lib/jenkins/jenkins-kubeconfig'
+            }
+            steps {
+                sh '''
+                    kubectl get nodes
+                    kubectl apply -f k8s/mysql.yaml
+                    kubectl apply -f k8s/deployment.yaml
+                '''
             }
         }
     }
