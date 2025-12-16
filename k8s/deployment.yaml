@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tp-projet-2025
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tp-projet-2025
+  template:
+    metadata:
+      labels:
+        app: tp-projet-2025
+    spec:
+      containers:
+      - name: tp-projet-2025
+        image: emna450/tp-projet-2025:latest 
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mysql://mysql-service:3306/tpdb
+        - name: SPRING_DATASOURCE_USERNAME
+          value: root
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: rootpassword
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tp-projet-2025-service
+spec:
+  type: NodePort
+  selector:
+    app: tp-projet-2025
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30080
