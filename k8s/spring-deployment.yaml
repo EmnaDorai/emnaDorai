@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: spring
+  template:
+    metadata:
+      labels:
+        app: spring
+    spec:
+      containers:
+      - name: spring
+        image: emna450/tp-projet-2025:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: spring-config
+        - secretRef:
+            name: db-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-service
+spec:
+  type: NodePort
+  selector:
+    app: spring
+  ports:
+    - port: 8080
+      nodePort: 30080
